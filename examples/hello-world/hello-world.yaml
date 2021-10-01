@@ -1,0 +1,58 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+
+metadata:
+  name: resources.qcr.github.com
+
+spec:
+  group: qcr.github.com
+  names:
+    singular: resource
+    plural: resources
+    kind: Resource
+    listKind: ResourceList
+  scope: Namespaced
+  versions:
+  - name: v1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        required: [ spec ]
+        properties:
+          spec:
+            type: object
+            properties:
+              property1:
+                type: string
+              property2:
+                type: string
+              property3:
+                type: string
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: myapp
+  annotations:
+    qcr.github.com/manifest: hello-world
+    qcr.github.com/keep: 'false'
+
+data:
+  hello-world: |
+    apiVersion: qcr.github.com/v1
+    kind: Resource
+
+    metadata:
+      name: hello-world
+      labels:
+        app.kubernetes.io/name: hello-world
+
+    spec:
+      property1: value1
+      property2: value2
+      property3: value3
